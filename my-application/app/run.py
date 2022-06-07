@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request
 import argparse
 
-
 from utils.utils_clusters import * 
 from utils.metrics_clusters import update_morph
+
+
+app = Flask(__name__)
 
 parser = argparse.ArgumentParser(description='Model specifics')
 
@@ -45,8 +47,6 @@ with open(args.data_dir + cluster_file + '.pkl', 'rb') as infile:
     cluster_df = pickle.load(infile)
     cluster_df = cluster_df.sort_values('cluster')
 
-
-app = Flask(__name__)
 
 
 @app.route("/")
