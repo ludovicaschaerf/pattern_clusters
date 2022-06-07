@@ -2,11 +2,21 @@ from flask import Flask, render_template, request
 import argparse
 
 
-from python_files.utils_clusters import * 
-from python_files.metrics_clusters import update_morph
+from utils.utils_clusters import * 
+from utils.metrics_clusters import update_morph
 
 parser = argparse.ArgumentParser(description='Model specifics')
 
+parser.add_argument('--data_dir', dest='data_dir',
+                        type=str, help='', default="../data/")
+parser.add_argument('--subfolder', dest='subfolder',
+                        type=str, help='', default="01-06-2022/")
+parser.add_argument('--precomputed', dest='precomputed',
+                        type=bool, help='', default=True)
+parser.add_argument('--type', dest='type',
+                        type=str, help='', default='dbscan')
+parser.add_argument('--eps', dest='eps',
+                        type=float, help='', default=0.08)
 
 args = parser.parse_args()
 
@@ -91,23 +101,4 @@ def visual_clusters():
     )
 
 
-if __name__ == "__main__":
     
-    parser.add_argument('--data_dir', dest='data_dir',
-                        type=str, help='', default="../data/")
-
-    parser.add_argument('--subfolder', dest='subfolder',
-                        type=str, help='', default="01-06-2022/")
-
-    parser.add_argument('--precomputed', dest='precomputed',
-                        type=bool, help='', default=True)
-
-    parser.add_argument('--type', dest='type',
-                        type=str, help='', default='dbscan')
-
-    parser.add_argument('--eps', dest='eps',
-                        type=float, help='', default=0.08)
-
-    
-
-    app.run()
