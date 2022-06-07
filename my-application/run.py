@@ -7,23 +7,8 @@ from python_files.metrics_clusters import update_morph
 
 parser = argparse.ArgumentParser(description='Model specifics')
 
-parser.add_argument('--data_dir', dest='data_dir',
-                    type=str, help='', default="../data/")
-
-parser.add_argument('--subfolder', dest='subfolder',
-                    type=str, help='', default="25-05-2022/")
-
-parser.add_argument('--precomputed', dest='precomputed',
-                    type=bool, help='', default=True)
-
-parser.add_argument('--type', dest='type',
-                    type=str, help='', default='kmeans')
-
-parser.add_argument('--eps', dest='eps',
-                    type=float, help='', default=1500)
 
 args = parser.parse_args()
-
 
 # morphograph
 # update_morph(args.data_dir, '-2022')
@@ -42,7 +27,7 @@ if args.subfolder == '01-06-2022/':
     data_file = args.subfolder + 'data_retrain_2.csv'
 
 data_norm = pd.read_csv(args.data_dir + data_file)
-embeds_file = args.subfolder + 'resnext-101_'+args.subfolder.strip('/') +'.npy' 
+# embeds_file = args.subfolder + 'resnext-101_'+args.subfolder.strip('/') +'.npy' 
 map_file = args.subfolder + 'map2pos.pkl'
 cluster_file = args.subfolder + 'clusters_'+args.type+'_'+str(args.eps)+'_'+args.subfolder.strip('/')+'_19'
     
@@ -107,5 +92,22 @@ def visual_clusters():
 
 
 if __name__ == "__main__":
+    
+    parser.add_argument('--data_dir', dest='data_dir',
+                        type=str, help='', default="../data/")
 
-    app.run(port=8080, debug=True)
+    parser.add_argument('--subfolder', dest='subfolder',
+                        type=str, help='', default="01-06-2022/")
+
+    parser.add_argument('--precomputed', dest='precomputed',
+                        type=bool, help='', default=True)
+
+    parser.add_argument('--type', dest='type',
+                        type=str, help='', default='dbscan')
+
+    parser.add_argument('--eps', dest='eps',
+                        type=float, help='', default=0.08)
+
+    
+
+    app.run()
