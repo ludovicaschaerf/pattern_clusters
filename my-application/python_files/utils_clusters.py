@@ -4,8 +4,6 @@ import pickle
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from glob import glob
-
 
 from sklearn.decomposition import PCA
 from sklearn.cluster import DBSCAN
