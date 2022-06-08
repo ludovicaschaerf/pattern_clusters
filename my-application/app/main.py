@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 # args = parser.parse_args()
 
-data_dir = "data/"
+data_dir = "my-application/data/"
 type = 'dbscan'
 eps = 0.08
 subfolder = '01-06-2022/'
