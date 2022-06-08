@@ -53,7 +53,7 @@ def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
     if request.method == "POST":
         if request.form["submit"] in ["similar_images", "both_images", "wrong", "correct", "general_images", "both_general_images", ]:
             cluster = [int(elt) for elt in request.form["item"].split(',')]
-            INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file)
+            INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file, data_dir=data_dir)
     
             imges_uids_sim = []
             for form_key in request.form.keys():
@@ -80,7 +80,7 @@ def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
                 store_wrong_positive_cluster(INFO[int(request.form["form"])], cluster_num, cluster_file, data_dir=data_dir, wrong=False)
             
 
-def images_in_clusters(cluster_df, data, data_dir='../data/', map_file='map2pos_10-05-2022.pkl'):
+def images_in_clusters(cluster_df, data, data_dir='data/', map_file='map2pos_10-05-2022.pkl'):
     data_agg = {}
     with open(data_dir + map_file, 'rb') as infile:
         map2pos = pickle.load(infile)
