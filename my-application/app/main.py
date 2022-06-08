@@ -24,34 +24,48 @@ app = Flask(__name__)
 
 data_dir = "my-application/data/"
 type = 'dbscan'
-eps = 0.08
-subfolder = '01-06-2022/'
 
 # morphograph
-# update_morph(args.data_dir, '-2022')
-
+update_morph(data_dir, '-2022')
 morpho = pd.read_csv(data_dir + 'morphograph/morpho_dataset.csv')
 
+
+
 # eps becomes number of clusters
-if type in ['mix','kmeans']:
-    eps = int(eps)
+# if type in ['mix','kmeans']:
+#     eps = int(eps)
 
-    
+def get_file_names(subfolder, eps):
+        
+    data_file = 'data_sample.csv' 
+    if subfolder == '28-05-2022/':
+        data_file = subfolder + 'data_retrain_1.csv'
+    if subfolder == '01-06-2022/':
+        data_file = subfolder + 'data_retrain_2.csv'
+    if subfolder == '07-06-2022/':
+        data_file = 'data.csv'
+
+    data_norm = pd.read_csv(data_dir + data_file)
+    #embeds_file = subfolder + 'resnext-101_'+subfolder.strip('/') +'.npy' 
+    map_file = subfolder + 'map2pos.pkl'
+    cluster_file = subfolder + 'clusters_'+type+'_'+str(eps)+'_'+subfolder.strip('/')+'_19'
+        
+    with open(data_dir + cluster_file + '.pkl', 'rb') as infile:
+        cluster_df = pickle.load(infile)
+        cluster_df = cluster_df.sort_values('cluster')
+
+    return data_norm, map_file, cluster_df, cluster_file
+
+
 # clustering files
-data_file = 'data_sample.csv' 
-if subfolder == '28-05-2022/':
-    data_file = subfolder + 'data_retrain_1.csv'
-if subfolder == '01-06-2022/':
-    data_file = subfolder + 'data_retrain_2.csv'
+  
+eps = 0.08
+subfolder = '01-06-2022/'
+data_norm, map_file, cluster_df, cluster_file = get_file_names(subfolder, eps)
 
-data_norm = pd.read_csv(data_dir + data_file)
-# embeds_file = args.subfolder + 'resnext-101_'+args.subfolder.strip('/') +'.npy' 
-map_file = subfolder + 'map2pos.pkl'
-cluster_file = subfolder + 'clusters_'+type+'_'+str(eps)+'_'+subfolder.strip('/')+'_19'
-    
-with open(data_dir + cluster_file + '.pkl', 'rb') as infile:
-    cluster_df = pickle.load(infile)
-    cluster_df = cluster_df.sort_values('cluster')
+eps_all = 0.00238
+subfolder_all = '07-06-2022/'
+data_all, map_file_all, cluster_df_all, cluster_file_all = get_file_names(subfolder_all, eps_all)
 
 
 
@@ -59,11 +73,24 @@ with open(data_dir + cluster_file + '.pkl', 'rb') as infile:
 def home():
     return render_template("home.html")
 
-@app.route("/clusters_embeds", methods=["GET", "POST"])
+@app.route("/clusters_subset", methods=["GET", "POST"])
 def clusters_embeds():
 
     INFO, cluster = show_results_button(cluster_df, data_norm, map_file, data_dir=data_dir) 
     annotate_store(cluster_df, data_norm, map_file, cluster_file, data_dir) 
+    
+    return render_template(
+        "clusters.html",
+        item=cluster,
+        data=INFO,
+        cold_start=request.method == "GET",
+    )
+
+@app.route("/clusters", methods=["GET", "POST"])
+def clusters_all():
+
+    INFO, cluster = show_results_button(cluster_df_all, data_all, map_file, data_dir=data_dir) 
+    annotate_store(cluster_df_all, data_all, map_file, cluster_file_all, data_dir) 
     
     return render_template(
         "clusters.html",
