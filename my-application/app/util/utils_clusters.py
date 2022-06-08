@@ -24,7 +24,7 @@ def convert_to_json(data_agg):
     return new
 
 
-def show_results_button(cluster_df, data, map_file):
+def show_results_button(cluster_df, data, map_file, data_dir='../data'):
     if request.method == "POST":
         if request.form["submit"] in ["text_search", "random_search", "next_search"]:
             if request.form["submit"] == "text_search":
@@ -45,7 +45,7 @@ def show_results_button(cluster_df, data, map_file):
     else:
         cluster = cluster_df.groupby('cluster').first().sample(1).index.values
       
-    INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file)
+    INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file, data_dir=data_dir)
     return INFO, ','.join([str(cl) for cl in cluster])
 
 

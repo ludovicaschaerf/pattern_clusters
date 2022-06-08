@@ -5,7 +5,7 @@ import networkx as nx
 
 from tqdm import tqdm 
 
-from utils import get_train_test_split, make_tree_orig, catch, find_most_similar_no_theo 
+from .utils import get_train_test_split, make_tree_orig, catch, find_most_similar_no_theo 
 
 def update_morph(data_dir, morph_file):
     with open(data_dir + 'save_link_data_2018_08_02.pkl', 'rb') as f:
