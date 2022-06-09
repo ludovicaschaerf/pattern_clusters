@@ -26,7 +26,7 @@ data_dir = "my-application/data/"
 type = 'dbscan'
 
 # morphograph
-update_morph(data_dir, '-2022')
+update_morph(data_dir, 'Original')
 morpho = pd.read_csv(data_dir + 'morphograph/morpho_dataset.csv')
 
 
