@@ -51,7 +51,7 @@ def show_results_button(cluster_df, data, map_file, data_dir='../data'):
 
 def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
     if request.method == "POST":
-        if request.form["submit"] in ["similar_images", "both_images", "wrong", "correct", "general_images", "both_general_images", ]:
+        if request.form["submit"] in ["similar_images", "both_images", "wrong", "correct", "general_images", "both_general_images", "duplicates"]:
             cluster = [int(elt) for elt in request.form["item"].split(',')]
             INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file, data_dir=data_dir)
     
@@ -61,6 +61,9 @@ def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
                     imges_uids_sim.append(request.form[form_key])
             cluster_num = int(request.form["form"])
             
+            if request.form["submit"] == "duplicates":
+                store_morph_cluster(imges_uids_sim, INFO[int(request.form["form"])], cluster_num, cluster_file, data_dir=data_dir, type_ann=['DUPLICATE'],)
+
             if request.form["submit"] == "similar_images":
                 store_morph_cluster(imges_uids_sim, INFO[int(request.form["form"])], cluster_num, cluster_file, data_dir=data_dir)
 

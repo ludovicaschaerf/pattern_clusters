@@ -12,17 +12,64 @@
 <body>
 
     <div class="row">
-        <div class="col-4">
+        <div class="col-9">
+
+            {% for cluster in data.keys() %}
+            <form action="#" method="POST" class="mb-5 mt-3">
+
+                <div class="form-group" id="similarity_form" style="page-break-before:always">
+                    <h2>Cluster {{cluster}}</h2>
+                    <div class="row">
+                        {% for res in data[cluster] %} {% set box_id = 'ckb' ~ cluster ~ 'idx' ~ loop.index %}
+                        <div class="custom-control custom-checkbox image-checkbox col-3">
+                            <input type="checkbox" class="custom-control-input" id="{{box_id}}" name="{{box_id}}" value="{{res[2]}}">
+                            <label class="custom-control-label" for="{{box_id}}">
+                                            <p>{{res[0]|safe}}</p>
+                                            <img src="{{res[1]}}" alt="#" class="img-fluid img-thumbnail" width="300">
+                                        </label>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    <br><br>
+                </div>
+                <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
+                <input id="form" name="form" style='visibility: hidden;' type='text' value={{cluster}}>
+                <br>
+                <button id="duplicates" type="submit" name="submit" value="duplicates" class="btn btn-primary mt-2">
+                        Duplicates
+                    </button>
+                <button id="submit_similar_imges" type="submit" name="submit" value="similar_images" class="btn btn-primary mt-2">
+                        Confirm Pattern
+                    </button>
+                <button id="submit_both_imges" type="submit" name="submit" value="both_images" class="btn btn-primary mt-2">
+                        Confirm Pattern and Wrong 
+                    </button>
+                <button id="submit_general" type="submit" name="submit" value="general_images" class="btn btn-primary mt-2">
+                        Confirm Similar
+                    </button>
+                <button id="submit_both_general" type="submit" name="submit" value="both_general_images" class="btn btn-primary mt-2">
+                        Confirm Similar and Different 
+                    </button>
+                <button id="submit_wrong" type="submit" name="submit" value="wrong" class="btn btn-primary mt-2">
+                        Wrong Cluster
+                    </button>
+                <button id="submit_correct" type="submit" name="submit" value="correct" class="btn btn-primary mt-2">
+                        Correct Cluster
+                    </button>
+            </form>
+            {% endfor %}
+        </div>
+
+        <div class="col-3">
             <form action="#" method="POST" enctype="multipart/form-data" id="random_search_form" class="mb-5 mt-3 ms-5">
                 <div class="form-group">
                     <h3>Random Search</h3>
                 </div>
 
                 <button type="submit" name="submit" value="random_search" class="btn btn-primary mt-3">Random
-                    Search</button>
+                                Search</button>
             </form>
-        </div>
-        <div class="col-4">
             <form action="#" method="POST" enctype="multipart/form-data" id="next_search_form" class="mb-5 mt-3 ms-5">
                 <div class="form-group">
                     <h3>Next</h3>
@@ -32,8 +79,6 @@
                 <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
 
             </form>
-        </div>
-        <div class="col-4">
             <form action="#" method="POST" class="mb-5 mt-3">
                 <h3>Search with cluster number</h3>
 
@@ -43,55 +88,11 @@
 
                 <button id="submit_text_search" type="submit" name="submit" value="text_search" class="btn btn-primary mt-2">Search</button>
             </form>
+
         </div>
-    </div>
 
 
 
-    <div class="col-9">
-
-        {% for cluster in data.keys() %}
-        <form action="#" method="POST" class="mb-5 mt-3">
-
-            <div class="form-group" id="similarity_form" style="page-break-before:always">
-                <h2>Cluster {{cluster}}</h2>
-                <div class="row">
-                    {% for res in data[cluster] %} {% set box_id = 'ckb' ~ cluster ~ 'idx' ~ loop.index %}
-                    <div class="custom-control custom-checkbox image-checkbox col-3">
-                        <input type="checkbox" class="custom-control-input" id="{{box_id}}" name="{{box_id}}" value="{{res[2]}}">
-                        <label class="custom-control-label" for="{{box_id}}">
-                                    <p>{{res[0]|safe}}</p>
-                                    <img src="{{res[1]}}" alt="#" class="img-fluid img-thumbnail" width="300">
-                                </label>
-                    </div>
-                    {% endfor %}
-
-                </div>
-                <br><br>
-            </div>
-            <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
-            <input id="form" name="form" style='visibility: hidden;' type='text' value={{cluster}}>
-            <br>
-            <button id="submit_similar_imges" type="submit" name="submit" value="similar_images" class="btn btn-primary mt-2">
-                Confirm Pattern
-            </button>
-            <button id="submit_both_imges" type="submit" name="submit" value="both_images" class="btn btn-primary mt-2">
-                Confirm Pattern and Wrong 
-            </button>
-            <button id="submit_general" type="submit" name="submit" value="general_images" class="btn btn-primary mt-2">
-                Confirm Similar
-            </button>
-            <button id="submit_both_general" type="submit" name="submit" value="both_general_images" class="btn btn-primary mt-2">
-                Confirm Similar and Different 
-            </button>
-            <button id="submit_wrong" type="submit" name="submit" value="wrong" class="btn btn-primary mt-2">
-                Wrong Cluster
-            </button>
-            <button id="submit_correct" type="submit" name="submit" value="correct" class="btn btn-primary mt-2">
-                Correct Cluster
-            </button>
-        </form>
-        {% endfor %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
