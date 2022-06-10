@@ -26,7 +26,7 @@ data_dir = "my-application/data/"
 type = 'dbscan'
 
 # morphograph
-update_morph(data_dir, 'Original')
+update_morph(data_dir, '')
 morpho = pd.read_csv(data_dir + 'morphograph/morpho_dataset.csv')
 
 
@@ -63,7 +63,7 @@ eps = 0.08
 subfolder = '01-06-2022/'
 data_norm, map_file, cluster_df, cluster_file = get_file_names(subfolder, eps)
 
-eps_all = 0.00238
+eps_all = 0.00239
 subfolder_all = '07-06-2022/'
 data_all, map_file_all, cluster_df_all, cluster_file_all = get_file_names(subfolder_all, eps_all)
 

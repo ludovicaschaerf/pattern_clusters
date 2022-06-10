@@ -12,7 +12,7 @@ def update_morph(data_dir, morph_file):
         morpho_graph_complete = pickle.load(f)
     morpho_graph_complete['cluster_file'] = 'Original'
     
-    metadata = pd.read_csv(data_dir + 'data_sample.csv')
+    metadata = pd.read_csv(data_dir + 'data.csv')
     metadata = metadata.drop(columns=['img1', 'img2', 'type', 'annotated', 'index', 'cluster', 'set', 'uid_connection'])
 
     ## function take what was already in train and test and preserve it (make train test split and then add the new ones)

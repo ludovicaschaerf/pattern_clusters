@@ -33,6 +33,7 @@
                     </div>
                     <br><br>
                 </div>
+                {% if item is defined %}
                 <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
                 <input id="form" name="form" style='visibility: hidden;' type='text' value={{cluster}}>
                 <br>
@@ -56,11 +57,12 @@
                     </button>
                 <button id="submit_correct" type="submit" name="submit" value="correct" class="btn btn-primary mt-2">
                         Correct Cluster
-                    </button>
+                    </button> {% endif %}
             </form>
             {% endfor %}
         </div>
 
+        {% if item is defined %}
         <div class="col-2">
             <form action="#" method="POST" enctype="multipart/form-data" id="random_search_form" class="mb-5 mt-3 ms-5">
                 <div class="form-group">
@@ -90,7 +92,7 @@
             </form>
 
         </div>
-
+        {% endif %}
 
 
     </div>
