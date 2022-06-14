@@ -11,9 +11,10 @@ data_dir = "my-application/data/"
 type = 'optics'
 
 # morphograph
-morpho = add_interest_scores(data_dir, translate=False, new=False)
+# morpho = add_interest_scores(data_dir, translate=False, new=False)
+# morpho.to_csv(data_dir + 'morphograph/morpho_dataset_enriched.csv')
 
-
+morpho = pd.read_csv(data_dir + 'morphograph/morpho_dataset_enriched.csv')
 # eps becomes number of clusters
 # if type in ['mix','kmeans']:
 #     eps = int(eps)
