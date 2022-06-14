@@ -7,22 +7,100 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
+    <script>
+        function Sort() {
+            console.log('sorting')
+            if (document.getElementsByName("iconography")[0].selected) {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    console.log($(b).find('.iconography').text());
+                    return $(b).find('.iconography').text().localeCompare($(a).find('.iconography').text(), false, {
+                        numeric: true
+                    })
+                })
+            } else if (document.getElementsByName("authors")[0].selected) {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    return $(b).find('.authors').text().localeCompare($(a).find('.authors').text(), false, {
+                        numeric: true
+                    })
+                })
+            } else if (document.getElementsByName("attributes")[0].selected) {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    return $(b).find('.attributes').text().localeCompare($(a).find('.attributes').text(), false, {
+                        numeric: true
+                    })
+                })
+            } else if (document.getElementsByName("times")[0].selected) {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    return $(b).find('.times').text().localeCompare($(a).find('.times').text(), false, {
+                        numeric: true
+                    })
+                })
+            } else if (document.getElementsByName("places")[0].selected) {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    return $(b).find('.places').text().localeCompare($(a).find('.places').text(), false, {
+                        numeric: true
+                    })
+                })
+            } else {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    return $(b).find('.number').text().localeCompare($(a).find('.number').text(), false, {
+                        numeric: true
+                    })
+                })
+
+            }
+
+            $('#results').remove('.show').append(sortedCards)
+        }
+    </script>
 </head>
 
 <body>
 
     <div class="row justify-content-center">
-        <div class="col-9">
+        <div class="col-9" id="results">
+            <div class="row justify-content-end">
+                <div class="col-4 pt-1" style='text-align:right'>
+                    <div class="nav-item dropdown">
+                        <form method='post'>
+                            <p>Sort by:
+                                <select name="thenumbers" id='sort-methods' data-toggle="tooltip" title='Click here to view and select the sorting options' class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <option name='original' value='original'>Original order</option>
+                                    <option name='iconography' value='iconography'>Iconographic variance</option>
+                                    <option name='authors' value='authors'>Author variance</option>
+                                    <option name='attributes' value='attributes'>Author attributes variance</option>
+                                    <option name='times' value='times'>Period variance</option>
+                                    <option name='places' value='places'>Place variance</option>
+                                </select>
+
+                            </p>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    $('#sort-methods').on('change', Sort)
+                </script>
+
+            </div>
+
+
 
             {% for cluster in data.keys() %}
-            <form action="#" method="POST" class="mb-5 mt-3">
+            <form class="show" action="#" method="POST" class="mb-5 mt-3">
 
                 <div class="form-group" id="similarity_form" style="page-break-before:always">
                     <h2>Cluster {{cluster}}</h2>
                     <div class="row">
                         {% for res in data[cluster] %} {% set box_id = 'ckb' ~ cluster ~ 'idx' ~ loop.index %}
                         <div class="custom-control custom-checkbox image-checkbox col-3">
-                            <input type="checkbox" class="custom-control-input" id="{{box_id}}" name="{{box_id}}" value="{{res[2]}}">
+                            {% if scores is defined %}
+                            <span class="number" hidden>{{cluster}}</span>
+                            <span class="iconography" hidden>{{scores[cluster]['scores_iconography']}}</span>
+                            <span class="authors" hidden>{{scores[cluster]['scores_authors']}}</span>
+                            <span class="attributes" hidden>{{scores[cluster]['scores_attributions']}}</span>
+                            <span class="times" hidden>{{scores[cluster]['scores_times']}}</span>
+                            <span class="places" hidden>{{scores[cluster]['scores_places']}}</span> {% endif %} {% if item is defined %}
+                            <input type="checkbox" class="custom-control-input" id="{{box_id}}" name="{{box_id}}" value="{{res[2]}}"> {% endif %}
                             <label class="custom-control-label" for="{{box_id}}">
                                             <p>{{res[0]|safe}}</p>
                                             <img src="{{res[1]}}" alt="#" class="img-fluid img-thumbnail" width="300">
@@ -64,6 +142,15 @@
 
         {% if item is defined %}
         <div class="col-2">
+            <form action="#" method="POST" class="mb-5 mt-3">
+                <h3>Search in metadata</h3>
+
+                <div class="form-group" id="text_form">
+                    <input class="form-control" placeholder="Enter text search" name="item_meta" value="{{item}}" required />
+                </div>
+
+                <button id="submit_metadata_search" type="submit" name="submit" value="metadata_search" class="btn btn-primary mt-2">Search</button>
+            </form>
             <form action="#" method="POST" enctype="multipart/form-data" id="random_search_form" class="mb-5 mt-3 ms-5">
                 <div class="form-group">
                     <h3>Random Search</h3>
@@ -96,6 +183,7 @@
 
 
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <!--- Prevent page refresh after form submitted-->

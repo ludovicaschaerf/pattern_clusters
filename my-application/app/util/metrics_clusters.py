@@ -13,7 +13,7 @@ def update_morph(data_dir, morph_file):
     morpho_graph_complete['cluster_file'] = 'Original'
     
     metadata = pd.read_csv(data_dir + 'data.csv')
-    metadata = metadata.drop(columns=['img1', 'img2', 'type', 'annotated', 'index', 'cluster', 'set', 'uid_connection'])
+    metadata = metadata.drop(columns=['img1', 'img2', 'type', 'annotated', 'index', 'cluster', 'set', 'uid_connection', 'cluster_file'])
 
     ## function take what was already in train and test and preserve it (make train test split and then add the new ones)
     positives = get_train_test_split(metadata, morpho_graph_complete)

@@ -6,9 +6,8 @@ import pandas as pd
 from datetime import datetime
 
 from sklearn.decomposition import PCA
-from sklearn.cluster import DBSCAN
 from sklearn.manifold import TSNE
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, OPTICS, DBSCAN, SpectralClustering
 from sklearn.mixture import BayesianGaussianMixture
 
 def catch(x, uid2path):
@@ -24,11 +23,18 @@ def convert_to_json(data_agg):
     return new
 
 
-def show_results_button(cluster_df, data, map_file, data_dir='../data'):
+def show_results_button(cluster_df, data, map_file, data_dir='data/'):
+    if 'Author' not in data.columns:
+        data['Author'] = data['AuthorOriginal']
+    merged_cluster = cluster_df.merge(data[['uid', 'Author', 'AuthorOriginal', 'Description', 'annotated', 'Country', 'BeginDate']], left_on='uid', right_on='uid', how='left')
+    merged_cluster['all'] = merged_cluster['AuthorOriginal'].astype(str) + ' '+ merged_cluster['AuthorOriginal'].astype(str) + ' ' + merged_cluster['Description'].astype(str) + ' ' + merged_cluster['Country'].astype(str) + ' ' + merged_cluster['BeginDate'].astype(str) + ' ' + merged_cluster['annotated'].astype(str)
     if request.method == "POST":
-        if request.form["submit"] in ["text_search", "random_search", "next_search"]:
+        if request.form["submit"] in ["text_search", "random_search", "next_search", "metadata_search"]:
             if request.form["submit"] == "text_search":
                 cluster = [int(elt) for elt in request.form["item"].split(',')]
+            elif request.form["submit"] == "metadata_search":
+                cluster = list(merged_cluster[merged_cluster['all'].str.lower().str.contains(
+                    request.form["item_meta"].lower())]['cluster'].unique())
             elif request.form["submit"] == "random_search":
                 if 'cluster_size' in cluster_df.columns:
                     print('correct')
@@ -90,6 +96,12 @@ def images_in_clusters(cluster_df, data, data_dir='data/', map_file='map2pos_10-
 
     if not 'annotated' in data.columns:
         data['annotated'] = ''
+    
+    if not 'Author' in data.columns:
+        data['Author'] = data['AuthorOriginal']
+
+    if not 'Description (EN)' in data.columns:
+        data['Description (EN)'] = ''
 
     if not 'Country' in data.columns:
         data['Country'] = ''
@@ -105,26 +117,23 @@ def images_in_clusters(cluster_df, data, data_dir='data/', map_file='map2pos_10-
             for row in rows.iterrows():
                 row_2 = data[data['uid'] == row[1]['uid']]
                 if str(row_2["set"].values[0]) != 'nan':
-                    if '2022' in str(row_2["annotated"].fillna('').values[0].split('_')[0].split(' ')[0]):
-                        info_2 = '<b style="color:red">' + str(row_2["AuthorOriginal"].values[0]) + '<br> ' + str(row_2["Description"].values[0]
+                    if '2022' in str(row_2["annotated"].fillna('').astype(str).values[0]).split('_')[0].split(' ')[0]:
+                        info_2 = '<b style="color:red">' + str(row_2["Author"].values[0]) + '<br> ' + str(row_2["Description"].values[0]#) + ' ' + str(row_2["Description (EN)"].values[0]
                             ) + '<br> ' + str(row_2["BeginDate"].values[0]
                             ) + '<br> ' + str(row_2["Country"].values[0]) + ' ' + str(row_2["City"].values[0]
-                            ) + '<br> ' + str(row_2["annotated"].fillna('').values[0].split('_')[0].split(' ')[0]
-                            ) + ' ' + str(row_2["set"].values[0]
+                            ) + '<br> ' + str(row_2["annotated"].fillna('').astype(str).values[0]).split('_')[0].split(' ')[0] + ' ' + str(row_2["set"].values[0]
                             ) + '</b>'    
                     else:
-                        info_2 = '<b>' + str(row_2["AuthorOriginal"].values[0]) + '<br> ' + str(row_2["Description"].values[0]
+                        info_2 = '<b>' + str(row_2["Author"].values[0]) + '<br> ' + str(row_2["Description"].values[0]#) + ' ' + str(row_2["Description (EN)"].values[0]
                             ) + '<br> ' + str(row_2["BeginDate"].values[0]
                             ) + '<br> ' + str(row_2["Country"].values[0]) + ' ' + str(row_2["City"].values[0]
-                            ) + '<br> ' + str(row_2["annotated"].fillna('').values[0].split('_')[0].split(' ')[0]
-                            ) + ' ' + str(row_2["set"].values[0]
+                            ) + '<br> ' + str(row_2["annotated"].fillna('').astype(str).values[0]).split('_')[0].split(' ')[0] + ' ' + str(row_2["set"].values[0]
                             ) + '</b>' 
                 else:
-                    info_2 = str(row_2["AuthorOriginal"].values[0]) + '<br> ' + str(row_2["Description"].values[0]
+                    info_2 = str(row_2["Author"].values[0]) + '<br> ' + str(row_2["Description"].values[0]#) + ' ' + str(row_2["Description (EN)"].values[0]
                             ) + '<br> ' + str(row_2["BeginDate"].values[0]
                             ) + '<br> ' + str(row_2["Country"].values[0]) + ' ' + str(row_2["City"].values[0]
-                            ) + '<br> ' + str(row_2["annotated"].fillna('').values[0].split('_')[0].split(' ')[0]
-                            ) + ' ' + str(row_2["set"].values[0]
+                            ) + '<br> ' + str(row_2["annotated"].fillna('').astype(str).values[0]).split('_')[0].split(' ')[0] + ' ' + str(row_2["set"].values[0]
                             )
                 uid = row[1]['uid']
                 pos = row[1]['pos']    
@@ -157,7 +166,11 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
                              min_n=2, type_clustering='dbscan', dist2=0.12):
     
     data = pd.read_csv(data_dir + data_file)
+    data = data.groupby(['Description', 'AuthorOriginal']).first().reset_index()
     embeds = np.load(data_dir + embed_file, allow_pickle=True) 
+    print(embeds.shape)
+    embeds = embeds[np.in1d(embeds[:, 0], list(data['uid'])),:]
+    print(embeds.shape)
     uids = list(data['uid'])
     
     uid2path = {}
@@ -165,11 +178,40 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
         uid2path[row['uid']] = row['path']
     
     if type_clustering=='dbscan':
-        
-        db = DBSCAN(eps=dist, min_samples=min_n, metric='cosine').fit(np.vstack(embeds[:,1])) #0.51 best so far
-        classes = db.labels_
-        labels = embeds[:,0]
-        
+        if embeds.shape[0] > 80000:
+            uid2remove = []
+            for i in [(0, 10000),(10000, 20000), (20000, 30000), (30000, 40000),
+                       (40000, 50000), (50000, 60000), (60000, 70000),(70000, embeds.shape[0])]:
+                print(i)
+                if i[1] == 80000:
+                    emb = np.concatenate((np.vstack(embeds[i[0]:i[1],1]), np.vstack(embeds[-5000:,1])), axis=0)
+                    labels = np.concatenate((embeds[i[0]:i[1],0], embeds[-5000:,0]), axis=0)
+                
+                else:
+                    emb = np.vstack(embeds[i[0]:i[1],1])
+                    labels = embeds[i[0]:i[1],0]
+                print(emb.shape)
+                db = DBSCAN(eps=dist2, min_samples=1, metric='cosine').fit(emb) #0.51 best so far
+                classes = db.labels_
+                clusters = pd.DataFrame({'uid':labels, 'cluster':classes})
+                print(clusters['cluster'].value_counts())
+                uid2remove.append(list(clusters[clusters['cluster'] == -1]['uid']))
+                print(len(uid2remove[-1]))
+
+            uid2remove = [i for in_ in uid2remove for i in in_ ]
+            new_embs = embeds[~np.in1d(embeds[:, 0], uid2remove),1]
+            print(new_embs.shape)
+            db = DBSCAN(eps=dist, min_samples=min_n, metric='cosine').fit(np.vstack(new_embs)) #0.51 best so far
+            classes = db.labels_
+            labels = embeds[~np.in1d(embeds[:, 0], uid2remove), 0]
+
+            
+
+        else:   
+            db = DBSCAN(eps=dist, min_samples=min_n, metric='cosine').fit(np.vstack(embeds[:,1])) #0.51 best so far
+            classes = db.labels_
+            labels = embeds[:,0]
+            
     elif type_clustering=='gaussian_mixture':
         embeddings_new = PCA(n_components=20).fit_transform(
             np.vstack(embeds[:, 1])
@@ -187,6 +229,12 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
         km = KMeans(n_clusters=dist, max_iter=100, n_init=10).fit(np.vstack(embeds[:,1]))
         classes = km.labels_
         labels = embeds[:,0]
+
+    elif type_clustering == 'optics':
+        db = OPTICS(max_eps=dist, min_samples=min_n, metric='cosine').fit(np.vstack(embeds[:,1])) #0.51 best so far
+        classes = db.labels_
+        labels = embeds[:,0]
+        
         
     elif type_clustering == 'mix':
         print('remove outliers with dbscan and cluster with kmeans')
@@ -202,6 +250,13 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
         classes = km.labels_
         labels = embeds[~np.in1d(embeds[:, 0], uid2remove), 0]
 
+    elif type_clustering == 'spectral_clustering':
+        clustering = SpectralClustering(n_clusters=dist,
+                                        assign_labels='discretize',
+                                        random_state=0,
+                                        ).fit(np.vstack(embeds[:,1]))
+        classes = clustering.labels_
+        labels = embeds[:,0]
     
     else:
         km = KMeans(n_clusters=dist, max_iter=100, n_init=10).fit(np.vstack(embeds[:,1]))
@@ -220,6 +275,7 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
     clusters['cluster_size'] = clusters['cluster'].apply(lambda x: clu2size[x])
 
     return clusters
+
 
 
 
