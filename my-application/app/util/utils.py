@@ -3,23 +3,22 @@ import networkx as nx
 import numpy as np
 from sklearn.neighbors import BallTree
 
-import umap
+#import umap
 from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-from torch import nn
-import torchvision.models as models
-import torch
-import torchvision.transforms as transforms
+# from torch import nn
+# import torchvision.models as models
+# import torch
+# import torchvision.transforms as transforms
 
 from tqdm import tqdm
 import requests
 from io import BytesIO
 
 #from metrics import recall_at_k, mean_average_precision
-from PIL import Image
-
+#from PIL import Image
 #from spatial_reranking import rerank_spatial
 
 from textwrap import wrap

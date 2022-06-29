@@ -1,14 +1,9 @@
 from flask import Flask, render_template, request
-import requests
-from io import BytesIO
-from PIL import Image
 import pickle
 
 import numpy as np
 import pandas as pd
 from datetime import datetime
-import json
-from glob import glob
 
 
 from sklearn.decomposition import PCA
