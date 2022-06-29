@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Ludovica Schaerf">
 
     <title>{% block title %}{% endblock %}</title>
 
@@ -14,28 +14,41 @@
     <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
 
+    <!-- Custom styles for this template -->
+    <link href="/static/css/one-page-wonder.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link type="text/css" rel="stylesheet" href="/static/js/galleria-1.6.1/dist/themes/azur/galleria.azur.min.css"> {% block scripts %}{%endblock%}
+
+    <link type="text/css" rel="stylesheet" href="../static/css/style.css?3">
 </head>
 
 <body>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark col-12 navbar-custom" style="background-color: #424B54;">
+    <nav class="navbar navbar-expand-lg col-12 navbar-custom bg-dark">
         <div class="container">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link text-white" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/morphograph">Morphograph</a>
+                    <a class="nav-link text-dark" href="/">Home</a>
+                </li>
+
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/morphograph">Morphograph</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/clusters_subset">Clusters (only subset)</a>
+                    <a class="nav-link text-white" href="/clusters_subset">Clusters (subset)</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/clusters">Clusters</a>
+                    <a class="nav-link text-white" href="/clusters">Clusters from embeddings</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/visual_clusters">Visual clusters</a>
+                    <a class="nav-link text-white" href="https://ludovicaschaerf.github.io/pixplot_pattern_propagation/">Visual clusters</a>
                 </li>
             </ul>
         </div>

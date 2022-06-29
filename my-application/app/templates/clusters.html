@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}clusters{%endblock%} {% block scripts %} {%endblock%} {% block body %}
+{% extends "base.html" %} {% block title %}Pattern clusters{%endblock%} {% block scripts %} {%endblock%} {% block body %}
 <!DOCTYPE html>
 <html>
 
@@ -20,6 +20,12 @@
             } else if (document.getElementsByName("authors")[0].selected) {
                 var sortedCards = $('.show').sort(function(a, b) {
                     return $(b).find('.authors').text().localeCompare($(a).find('.authors').text(), false, {
+                        numeric: true
+                    })
+                })
+            } else if (document.getElementsByName("count")[0].selected) {
+                var sortedCards = $('.show').sort(function(a, b) {
+                    return $(b).find('.count').text().localeCompare($(a).find('.count').text(), false, {
                         numeric: true
                     })
                 })
@@ -57,15 +63,17 @@
 
 <body>
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mt-5">
         <div class="col-9" id="results">
+            {% if scores is defined %}
             <div class="row justify-content-end">
                 <div class="col-4 pt-1" style='text-align:right'>
                     <div class="nav-item dropdown">
                         <form method='post'>
                             <p>Sort by:
-                                <select name="thenumbers" id='sort-methods' data-toggle="tooltip" title='Click here to view and select the sorting options' class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <select name="thenumbers" id='sort-methods' data-toggle="tooltip" title='Click here to view and select the sorting options' class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <option name='original' value='original'>Original order</option>
+                                    <option name='count' value='count'>Cluster size</option>
                                     <option name='iconography' value='iconography'>Iconographic variance</option>
                                     <option name='authors' value='authors'>Author variance</option>
                                     <option name='attributes' value='attributes'>Author attributes variance</option>
@@ -82,129 +90,114 @@
                 </script>
 
             </div>
-
-
-
-            {% for cluster in data.keys() %}
+            {% endif %} {% for cluster in data.keys() %}
             <form class="show" action="#" method="POST" class="mb-5 mt-3">
-
+                {% if item is defined %}
                 <div class="form-group" id="similarity_form" style="page-break-before:always">
-                    <h2>Cluster {{cluster}}</h2>
-                    <div class="row">
-                        {% for res in data[cluster] %} {% set box_id = 'ckb' ~ cluster ~ 'idx' ~ loop.index %}
-                        <div class="custom-control custom-checkbox image-checkbox col-3">
-                            {% if scores is defined %}
-                            <span class="number" hidden>{{cluster}}</span>
-                            <span class="iconography" hidden>{{scores[cluster]['scores_iconography']}}</span>
-                            <span class="authors" hidden>{{scores[cluster]['scores_authors']}}</span>
-                            <span class="attributes" hidden>{{scores[cluster]['scores_attributions']}}</span>
-                            <span class="times" hidden>{{scores[cluster]['scores_times']}}</span>
-                            <span class="places" hidden>{{scores[cluster]['scores_places']}}</span> {% endif %} {% if item is defined %}
-                            <input type="checkbox" class="custom-control-input" id="{{box_id}}" name="{{box_id}}" value="{{res[2]}}"> {% endif %}
-                            <label class="custom-control-label" for="{{box_id}}">
+                    {% else %}
+                    <div id="similarity_form" style="page-break-before:always">
+                        {% endif %}
+                        <h2>Cluster {{cluster}}</h2>
+                        <div class="row">
+                            {% for res in data[cluster] %} {% set box_id = 'ckb' ~ cluster ~ 'idx' ~ loop.index %} {% if item is defined %}
+                            <div class="custom-control custom-checkbox image-checkbox col-3">
+                                {% else %}
+                                <div class="col-3">
+                                    {% endif %} {% if scores is defined %}
+                                    <span class="number" hidden>{{cluster}}</span>
+                                    <span class="count" hidden>{{scores[cluster]['scores_count']}}</span>
+                                    <span class="iconography" hidden>{{scores[cluster]['scores_iconography']}}</span>
+                                    <span class="authors" hidden>{{scores[cluster]['scores_authors']}}</span>
+                                    <span class="attributes" hidden>{{scores[cluster]['scores_attributions']}}</span>
+                                    <span class="times" hidden>{{scores[cluster]['scores_times']}}</span>
+                                    <span class="places" hidden>{{scores[cluster]['scores_places']}}</span> {% endif %} {% if item is defined %}
+                                    <input type="checkbox" class="custom-control-input" id="{{box_id}}" name="{{box_id}}" value="{{res[2]}}"> {% endif %}
+                                    <label class="custom-control-label" for="{{box_id}}">
                                             <p>{{res[0]|safe}}</p>
                                             <img src="{{res[1]}}" alt="#" class="img-fluid img-thumbnail" width="300">
                                         </label>
-                        </div>
-                        {% endfor %}
+                                </div>
+                                {% endfor %}
 
-                    </div>
-                    <br><br>
-                </div>
-                {% if item is defined %}
-                <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
-                <input id="form" name="form" style='visibility: hidden;' type='text' value={{cluster}}>
-                <br>
-                <button id="duplicates" type="submit" name="submit" value="duplicates" class="btn btn-primary mt-2">
+                            </div>
+
+                        </div>
+                        {% if item is defined %}
+
+                        <button id="duplicates" type="submit" name="submit" value="duplicates" class="btn btn-light">
                         Duplicates
                     </button>
-                <button id="submit_similar_imges" type="submit" name="submit" value="similar_images" class="btn btn-primary mt-2">
+                        <button id="submit_similar_imges" type="submit" name="submit" value="similar_images" class="btn btn-light">
                         Confirm Pattern
                     </button>
-                <button id="submit_both_imges" type="submit" name="submit" value="both_images" class="btn btn-primary mt-2">
+                        <button id="submit_both_imges" type="submit" name="submit" value="both_images" class="btn btn-light">
                         Confirm Pattern and Wrong 
                     </button>
-                <button id="submit_general" type="submit" name="submit" value="general_images" class="btn btn-primary mt-2">
+                        <button id="submit_general" type="submit" name="submit" value="general_images" class="btn btn-light">
                         Confirm Similar
                     </button>
-                <button id="submit_both_general" type="submit" name="submit" value="both_general_images" class="btn btn-primary mt-2">
+                        <button id="submit_both_general" type="submit" name="submit" value="both_general_images" class="btn btn-light">
                         Confirm Similar and Different 
                     </button>
-                <button id="submit_wrong" type="submit" name="submit" value="wrong" class="btn btn-primary mt-2">
+                        <button id="submit_wrong" type="submit" name="submit" value="wrong" class="btn btn-light">
                         Wrong Cluster
                     </button>
-                <button id="submit_correct" type="submit" name="submit" value="correct" class="btn btn-primary mt-2">
+                        <button id="submit_correct" type="submit" name="submit" value="correct" class="btn btn-light">
                         Correct Cluster
-                    </button> {% endif %}
+                    </button>
+
+                        <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
+                        <input id="form" name="form" style='visibility: hidden;' type='text' value={{cluster}}> <br>{% endif %}
             </form>
             {% endfor %}
-        </div>
+            </div>
 
-        {% if item is defined %}
-        <div class="col-2">
-            <form action="#" method="POST" class="mb-5 mt-3">
-                <h3>Search in metadata</h3>
+            {% if item is defined %}
+            <div class="col-2">
+                <form action="#" method="POST" class="mb-3">
+                    <h5>Search in metadata</h5>
 
-                <div class="form-group" id="text_form">
-                    <input class="form-control" placeholder="Enter text search" name="item_meta" value="{{item}}" required />
-                </div>
+                    <div class="form-group" id="text_form">
+                        <input class="form-control" placeholder="Enter text search" name="item_meta" value="{{item}}" required />
+                    </div>
 
-                <button id="submit_metadata_search" type="submit" name="submit" value="metadata_search" class="btn btn-primary mt-2">Search</button>
-            </form>
-            <form action="#" method="POST" enctype="multipart/form-data" id="random_search_form" class="mb-5 mt-3 ms-5">
-                <div class="form-group">
-                    <h3>Random Search</h3>
-                </div>
+                    <button id="submit_metadata_search" type="submit" name="submit" value="metadata_search" class="btn btn-light">Search</button>
+                </form>
+                <form action="#" method="POST" class="mb-3">
+                    <h5>Search with cluster number</h5>
 
-                <button type="submit" name="submit" value="random_search" class="btn btn-primary mt-3">Random
+                    <div class="form-group" id="text_form">
+                        <input class="form-control" placeholder="Enter UID of the image" name="item" value="{{item}}" required />
+                    </div>
+
+                    <button id="submit_text_search" type="submit" name="submit" value="text_search" class="btn btn-light">Search</button>
+                </form>
+                <form action="#" method="POST" enctype="multipart/form-data" id="random_search_form" class="mb-3">
+                    <div class="form-group">
+                        <h5>Random Search</h5>
+                    </div>
+
+                    <button type="submit" name="submit" value="random_search" class="btn btn-light">Random
                                 Search</button>
-            </form>
-            <form action="#" method="POST" enctype="multipart/form-data" id="next_search_form" class="mb-5 mt-3 ms-5">
-                <div class="form-group">
-                    <h3>Next</h3>
-                </div>
+                </form>
+                <form action="#" method="POST" enctype="multipart/form-data" id="next_search_form" class="mb-3">
+                    <div class="form-group">
+                        <h5>Next</h5>
+                    </div>
 
-                <button type="submit" name="submit" value="next_search" class="btn btn-primary mt-3"> Next</button>
-                <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
+                    <button type="submit" name="submit" value="next_search" class="btn btn-light"> Next</button>
+                    <input class="form-control" style='visibility: hidden;' placeholder="Enter UID of the image" name="item" value="{{item}}" required />
 
-            </form>
-            <form action="#" method="POST" class="mb-5 mt-3">
-                <h3>Search with cluster number</h3>
+                </form>
 
-                <div class="form-group" id="text_form">
-                    <input class="form-control" placeholder="Enter UID of the image" name="item" value="{{item}}" required />
-                </div>
-
-                <button id="submit_text_search" type="submit" name="submit" value="text_search" class="btn btn-primary mt-2">Search</button>
-            </form>
-
-        </div>
-        {% endif %}
+            </div>
+            {% endif %}
 
 
-    </div>
+            </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-    <!--- Prevent page refresh after form submitted-->
-    <script type="text/javascript">
-        $('#form').submit(function(e) {
-            e.preventDefault();
-        });
-
-        $('#submit_both_imges').submit(function(e) {
-            e.preventDefault();
-        });
-
-        $('#submit_wrong').submit(function(e) {
-            e.preventDefault();
-        });
-
-
-        $('.btn').submit(function(e) {
-            e.preventDefault();
-        });
-    </script>
+            <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 
 
 </body>
