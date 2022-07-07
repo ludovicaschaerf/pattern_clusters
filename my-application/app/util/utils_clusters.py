@@ -14,7 +14,7 @@ from sklearn.mixture import BayesianGaussianMixture
 
 
 def show_results_button(cluster_df, data, map_file, data_dir='../data/'):
-    """_summary_
+    """Based on user input, selects the cluster and computes all the information to serve on the website.
 
     Args:
         cluster_df (_type_): _description_
@@ -56,7 +56,7 @@ def show_results_button(cluster_df, data, map_file, data_dir='../data/'):
 
 
 def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
-    """_summary_
+    """Stores the connection on an output file based on the clicked button.
 
     Args:
         cluster_df (_type_): _description_
@@ -68,7 +68,7 @@ def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
     if request.method == "POST":
         if request.form["submit"] in ["similar_images", "both_images", "wrong", "correct", "general_images", "both_general_images", ]:
             cluster = [int(elt) for elt in request.form["item"].split(',')]
-            INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file)
+            INFO = images_in_clusters(cluster_df[cluster_df['cluster'].isin(cluster)], data, map_file=map_file, data_dir=data_dir)
     
             imges_uids_sim = []
             for form_key in request.form.keys():
@@ -96,7 +96,7 @@ def annotate_store(cluster_df, data, map_file, cluster_file, data_dir):
             
 
 def images_in_clusters(cluster_df, data, data_dir='../data/', map_file='map2pos_10-05-2022.pkl'):
-    """_summary_
+    """Creates all the informational content to be served on the website for each cluster.
 
     Args:
         cluster_df (_type_): _description_
@@ -181,7 +181,7 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
                              embed_file='resnext-101_epoch_410-05-2022_10%3A11%3A05.npy', dist=0.13,
                              min_n=2, type_clustering='dbscan', dist2=0.12):
     
-    """_summary_
+    """Creates the clusters based on the input method, the embeddings and the data file.
 
     Returns:
         _type_: _description_
@@ -225,9 +225,6 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
             db = DBSCAN(eps=dist, min_samples=min_n, metric='cosine').fit(np.vstack(new_embs)) #0.51 best so far
             classes = db.labels_
             labels = embeds[~np.in1d(embeds[:, 0], uid2remove), 0]
-
-            
-
         else:   
             db = DBSCAN(eps=dist, min_samples=min_n, metric='cosine').fit(np.vstack(embeds[:,1])) #0.51 best so far
             classes = db.labels_
@@ -266,7 +263,6 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
         labels = embeds[:,0]
         clusters = pd.DataFrame({'uid':labels, 'cluster':classes})
     
-        
     elif type_clustering == 'mix':
         print('remove outliers with dbscan and cluster with kmeans')
         print(dist2)
@@ -314,9 +310,7 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
                                         ).fit(np.vstack(embeds[:,1]))
         classes = clustering.labels_
         labels = embeds[:,0]
-        clusters = pd.DataFrame({'uid':labels, 'cluster':classes})
-    
-    
+        clusters = pd.DataFrame({'uid':labels, 'cluster':classes})    
     else:
         km = KMeans(n_clusters=dist, max_iter=100, n_init=10).fit(np.vstack(embeds[:,1]))
         classes = km.labels_

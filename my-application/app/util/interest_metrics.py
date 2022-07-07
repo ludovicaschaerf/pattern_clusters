@@ -56,7 +56,7 @@ def cluster_text(text, range_try=(100,102), hyperparam=False, num_clusters=100):
     return clusters
 
 
-def add_interest_scores(data_dir='../data/', translate=False, new=False, precomputed=True):
+def add_interest_scores(data_dir='../data/', translate=False, new=True, precomputed=True):
     """_summary_
 
     Args:
