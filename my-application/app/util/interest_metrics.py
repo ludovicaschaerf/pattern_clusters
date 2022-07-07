@@ -12,7 +12,7 @@ from .metrics_clusters import *
 from .utils import *
 
 def cluster_text(text, range_try=(100,102), hyperparam=False, num_clusters=100):
-    """_summary_
+    """Kmean++ clustering based on Manhattan distance.
 
     Args:
         text (_type_): _description_
@@ -57,7 +57,11 @@ def cluster_text(text, range_try=(100,102), hyperparam=False, num_clusters=100):
 
 
 def add_interest_scores(data_dir='../data/', translate=False, new=True, precomputed=True):
-    """_summary_
+    """Adds multiple scores for each cluster based on its Iconographic, Author, Attrbitues, Place, Time variance.
+    The attribute and iconographic variances are based on the number of text-clusters in each morphograph group
+    of the author attributes text (ie. (attr.)) and the cleaned descriptor. The author is based on the number of 
+    different lastnames and the place and time on the maximal variance in date of begin of the work and latitute 
+    and longitude for the place.
 
     Args:
         data_dir (str, optional): _description_. Defaults to '../data/'.

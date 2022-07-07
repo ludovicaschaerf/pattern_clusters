@@ -9,7 +9,8 @@ from .utils import get_train_test_split, make_tree_orig, catch, find_most_simila
 
 
 def update_morph(data_dir, morph_file, new=False):
-    """_summary_
+    """Updates original morphograph using the new annotations. Creates the new set merging with the original one,
+    assigning the train test split and deduplicating.
 
     Args:
         data_dir (_type_): _description_
@@ -45,13 +46,13 @@ def update_morph(data_dir, morph_file, new=False):
     morpho_graph_clusters['annotated'] = morpho_graph_clusters['date']
     morpho_graph_clusters = morpho_graph_clusters.drop(columns=['uid_connection', 'date', 'cluster'])
     
-    print('before adding the new ones', morpho_graph_complete[morpho_graph_complete['type'] == 'POSITIVE'].shape)
+    #print('before adding the new ones', morpho_graph_complete[morpho_graph_complete['type'] == 'POSITIVE'].shape)
     morpho_graph_complete = pd.concat([morpho_graph_complete, morpho_graph_clusters], axis=0)
-    print('after adding', morpho_graph_complete[morpho_graph_complete['type'] == 'POSITIVE'].shape)
+    #print('after adding', morpho_graph_complete[morpho_graph_complete['type'] == 'POSITIVE'].shape)
     morpho_graph_complete = morpho_graph_complete.groupby('uid').first().reset_index()
-    print('after deduplicating', morpho_graph_complete[morpho_graph_complete['type'] == 'POSITIVE'].shape)
+    #print('after deduplicating', morpho_graph_complete[morpho_graph_complete['type'] == 'POSITIVE'].shape)
     positives = get_new_split(metadata, positives, morpho_graph_complete)
-    print(positives.shape)
+    #print(positives.shape)
     #positives = positives.groupby(['uid_connection']).first().reset_index()
     positives['old_cluster'] = positives['cluster']
     positives['cluster'] = positives['new_cluster']
@@ -61,7 +62,9 @@ def update_morph(data_dir, morph_file, new=False):
     return positives
 
 def get_new_split(metadata, positives, morpho_update):
-    """_summary_
+    """Computes the original train test split, adds the added images
+    of groups already belonging to a set to the same set and the new images to the training set.
+
 
     Args:
         metadata (_type_): _description_
@@ -112,7 +115,7 @@ def get_new_split(metadata, positives, morpho_update):
 
 
 def cluster_accuracy(cluster_annotations):
-    """_summary_
+    """Computes the ratio between positive and negative annotations.
 
     Args:
         cluster_annotations (_type_): _description_
@@ -135,7 +138,7 @@ def cluster_accuracy(cluster_annotations):
 
 
 def novelty_score(updated_morph, cluster_file, previous_cluster='Original'):
-    """_summary_
+    """Computes indicated summary statistics from the updated morphograph.
 
     Args:
         updated_morph (_type_): _description_
@@ -165,7 +168,7 @@ def novelty_score(updated_morph, cluster_file, previous_cluster='Original'):
 
 
 def evaluate_morph(positives, cluster_file, data_dir='../data/', set_splits=['train', 'val', 'test'], verbose=False):
-    """_summary_
+    """Computes precision and recall of the clusters as explained in the thesis.
 
     Args:
         positives (_type_): _description_
@@ -219,8 +222,8 @@ def evaluate_morph(positives, cluster_file, data_dir='../data/', set_splits=['tr
 
 
 def make_new_train_set(embeddings, train_test, updated_morph, cluster_file, uid2path):
-    'for each positive train with negative, if no negative, take closest one'
-    """_summary_
+    """Creates the 'half' retrain set. For each image in morphograph, it trains either with 2 closest N or with one and every
+    annotated negative edge.
 
     Returns:
         _type_: _description_
@@ -265,7 +268,8 @@ def make_new_train_set(embeddings, train_test, updated_morph, cluster_file, uid2
 
 
 def track_cluster_progression(cluster_annotations, cluster_file, previous_cluster_date, positives, data_dir='../data/', set_splits=['train', 'no set']):
-    """_summary_
+    """Computes the ratio of positive edges that were annotated that were retained in the new clustering and the ratio of negative
+    ones that were, on the other side, separated successfully.
 
     Args:
         cluster_annotations (_type_): _description_

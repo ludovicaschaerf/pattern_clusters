@@ -332,7 +332,7 @@ def make_clusters_embeddings(data_dir='../data/', data_file='data_wga_cini_45000
 
 
 def get_2d_pos(data_dir='../data/', embed_file='resnext-101_epoch_410-05-2022_10%3A11%3A05.npy'):
-    """_summary_
+    """Gets 2D TSNE reduced positions of the embeddings.
 
     Args:
         data_dir (str, optional): _description_. Defaults to '../data/'.
@@ -353,7 +353,8 @@ def get_2d_pos(data_dir='../data/', embed_file='resnext-101_epoch_410-05-2022_10
 
 
 def store_wrong_positive_cluster(info_cluster, cluster_num, cluster_file, data_dir='/scratch/students/schaerf/annotation/', wrong=True):
-    """_summary_
+    """For each cluster annotated as wrong, stores the cluster as wrong, and adds a negative edge between each images and those images
+    in the clusters that are also in the morphograph. Or oppositely for correct clusters (wrong=False)
 
     Args:
         info_cluster (_type_): _description_
@@ -393,7 +394,7 @@ def store_wrong_positive_cluster(info_cluster, cluster_num, cluster_file, data_d
 
 
 def store_morph_cluster(imges_uids_sim, info_cluster, cluster_num, cluster_file, data_dir='/scratch/students/schaerf/annotation/', type_ann=['POSITIVE', 'NEGATIVE'], negatives=False):
-    """_summary_
+    """Based on type annotation it stores the indicates positive and negative connections (positive between items clicked and negative to all others)
 
     Args:
         imges_uids_sim (_type_): _description_
@@ -430,7 +431,7 @@ def store_morph_cluster(imges_uids_sim, info_cluster, cluster_num, cluster_file,
     print(morpho.shape, update.shape)
     update.to_csv(data_dir + 'morphograph_clusters_new.csv', index=False)
 
-
+### Deprecated
 
 def make_clusters_rerank(data_dir='../data/', uid2path_file = 'uid2path.pkl', final_file='list_iconography.pkl', embed_file='similarities_madonnas_2600.npy'):
     """_summary_
